@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export Data to CSV</title>
+</head>
+<body>
+    <!-- Your HTML content for data input -->
+    <div id="session-number">123</div>
+    <div id="number-of-runs">5</div>
+    <div id="dog-id">ABC123</div>
+    <div id="start-time">2024-06-09</div>
+    <div id="sniffed-links">
+        <ul>
+            <li>Link 1</li>
+            <li>Link 2</li>
+        </ul>
+    </div>
+    <div id="unsniffed-links">
+        <ul>
+            <li>Link 3</li>
+            <li>Link 4</li>
+        </ul>
+    </div>
+    <div class="button button-red">Button 1</div>
+    <div class="button button-red">Button 2</div>
+    <div class="button button-yellow">Button 3</div>
+    <div class="button button-yellow">Button 4</div>
+    
+    <!-- Button to trigger CSV export -->
+    <button id="csv-view-btn">Export to CSV</button>
+
+    <script>
+        function exportToCSV() {
+            // Gather data from various sources
+            const sessionNumber = document.getElementById('session-number').textContent;
+            const numberOfRuns = document.getElementById('number-of-runs').textContent;
+            const dogId = document.getElementById('dog-id').textContent;
+            const startTime = document.getElementById('start-time').textContent;
+            const truePositives = [...document.querySelectorAll('.button.button-red')].map(btn => btn.textContent);
+            const falsePositives = [...document.querySelectorAll('.button.button-yellow')].map(btn => btn.textContent);
+            const sniffedLinks = [...document.getElementById('sniffed-links').querySelectorAll('li')].map(li => li.textContent);
+            const unsniffedLinks = [...document.getElementById('unsniffed-links').querySelectorAll('li')].map(li => li.textContent);
+            
+            // Format data into CSV-compatible format
+            const csvData = [
+                // Headers
+                ['Session Number', 'Number of Runs', 'Dog ID', 'Start Time', 'True Positives', 'False Positives', 'Sniffed Links', 'Unsniffed Links'],
+                // Data rows
+                [sessionNumber, numberOfRuns, dogId, startTime, truePositives.join(', '), falsePositives.join(', '), sniffedLinks.join(', '), unsniffedLinks.join(', ')]
+            ];
+            
+            // Convert data to CSV format
+            const csvContent = csvData.map(row => row.join(',')).join('\n');
+            
+            // Create a Blob object containing the CSV data
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            
+            // Create a link element to trigger the download
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = 'scan_data.csv';
+            
+            // Simulate a click on the link to trigger the download
+            link.click();
+        }
+        
+        // Add event listener to download button
+        document.getElementById('csv-view-btn').addEventListener('click', exportToCSV);
+        
+        // Call the exportToCSV function when the page loads
+        window.onload = exportToCSV;
+    </script>
+</body>
+</html>

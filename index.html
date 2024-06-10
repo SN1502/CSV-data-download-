@@ -3,57 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>List Transfer Example</title>
-    <style>
-        #container {
-            display: flex;
-            justify-content: space-around;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        li {
-            padding: 5px;
-            border: 1px solid #000;
-            margin-bottom: 5px;
-        }
-        button {
-            margin-top: 20px;
-        }
-    </style>
+    <title>Export Data to CSV</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-    <h1>Transfer List Items</h1>
-    <div id="container">
-        <div>
-            <h2>Unsniffed List</h2>
-            <ul id="unsniffedList">
-                <!-- Values will be here -->
-            </ul>
-        </div>
-        <div>
-            <h2>Sniffed List</h2>
-            <ul id="sniffedList">
-                <li>Item 1</li>
-                <li>Item 2</li>
-                <!-- More values can be added here -->
-            </ul>
-        </div>
+    <!-- Your HTML content for data input -->
+    <div id="session-number">123</div>
+    <div id="number-of-runs">5</div>
+    <div id="dog-id">ABC123</div>
+    <div id="start-time">2024-06-09</div>
+    <div id="sniffed-links">
+        <ul>
+            <li>Link 1</li>
+            <li>Link 2</li>
+        </ul>
     </div>
-    <button onclick="transferItems()">Transfer All to Unsniffed List</button>
+    <div id="unsniffed-links">
+        <ul>
+            <li>Link 3</li>
+            <li>Link 4</li>
+        </ul>
+    </div>
+    <div class="button button-red">Button 1</div>
+    <div class="button button-red">Button 2</div>
+    <div class="button button-yellow">Button 3</div>
+    <div class="button button-yellow">Button 4</div>
+
+    <!-- Icon button to trigger CSV export -->
+    <li class="nav-item">
+        <i class="fas fa-file-csv icon-button" id="csv-view-btn" style="cursor: pointer;"></i>
+    </li>
 
     <script>
-        function transferItems() {
-            // Get the lists
-            const sniffedList = document.getElementById('sniffedList');
-            const unsniffedList = document.getElementById('unsniffedList');
-            
-            // Move each item from sniffedList to unsniffedList
-            while (sniffedList.firstChild) {
-                unsniffedList.appendChild(sniffedList.firstChild);
-            }
+        function downloadCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            // Add form data
+            csvContent += `Session Number,Number of Runs,Dog ID,Start Time\n`;
+            csvContent += `${document.getElementById('session-number').textContent},${document.getElementById('number-of-runs').textContent},${document.getElementById('dog-id').textContent},${document.getElementById('start-time').textContent}\n\n`;
+            // Add button data
+            csvContent += "True Positives\n";
+            document.querySelectorAll('.button.button-red').forEach(button => {
+                csvContent += `${button.textContent}\n`;
+            });
+            csvContent += "\n";
+            csvContent += "False Positives\n";
+            document.querySelectorAll('.button.button-yellow').forEach(button => {
+                csvContent += `${button.textContent}\n`;
+            });
+            csvContent += "\n";
+            // Add sniffed data
+            csvContent += "Sniffed Links\n";
+            document.querySelectorAll('#sniffed-links li').forEach(link => {
+                csvContent += `${link.textContent}\n`;
+            });
+            csvContent += "\n";
+            // Add unsniffed data
+            csvContent += "Unsniffed Links\n";
+            document.querySelectorAll('#unsniffed-links li').forEach(link => {
+                csvContent += `${link.textContent}\n`;
+            });
+
+            // Create and download the CSV file
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "scan_data.csv");
+            document.body.appendChild(link); // Required for Firefox
+            link.click();
         }
+
+        // Add event listener to download button
+        document.getElementById('csv-view-btn').addEventListener('click', downloadCSV);
     </script>
 </body>
 </html>
